@@ -1,0 +1,23 @@
+<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width"><title>Tetris</title><style>body{margin:0;background:#111;color:#fff;font:18px sans-serif;text-align:center}canvas{background:#000;margin-top:10px;max-width:100%}</style>
+<div>Šipky: pohyb/rotace, mezerník: pád, Enter: znovu</div><canvas id=c width=240 height=480></canvas>
+<script>
+const x=c.getContext('2d'),W=10,H=20,S=24;
+const SH=[[[1,1,1,1]],[[1,1],[1,1]],[[0,1,0],[1,1,1]],[[1,0,0],[1,1,1]],[[0,0,1],[1,1,1]],[[0,1,1],[1,1,0]],[[1,1,0],[0,1,1]]],CL=['#0ff','#ff0','#a0f','#00f','#f80','#0f0','#f00'];
+let b,p,score,over;
+function hit(m,px,py){return m.some((r,y)=>r.some((v,i)=>v&&(px+i<0||px+i>=W||py+y>=H||(py+y>=0&&b[py+y][px+i]))))}
+function nw(){const i=Math.random()*7|0;p={m:SH[i],c:CL[i],x:3,y:0};if(hit(p.m,p.x,p.y))over=true}
+function init(){b=Array.from({length:H},()=>Array(W).fill(0));score=0;over=false;nw()}
+function lock(){p.m.forEach((r,y)=>r.forEach((v,i)=>{if(v&&p.y+y>=0)b[p.y+y][p.x+i]=p.c}));b=b.filter(r=>r.some(v=>!v));const n=H-b.length;score+=n*n*100;while(b.length<H)b.unshift(Array(W).fill(0));nw()}
+function step(){if(!hit(p.m,p.x,p.y+1))p.y++;else lock()}
+document.onkeydown=e=>{if(over){if(e.key=='Enter')init();return}
+ if(e.key=='ArrowLeft'&&!hit(p.m,p.x-1,p.y))p.x--;
+ if(e.key=='ArrowRight'&&!hit(p.m,p.x+1,p.y))p.x++;
+ if(e.key=='ArrowDown')step();
+ if(e.key=='ArrowUp'){const r=p.m[0].map((_,i)=>p.m.map(q=>q[i]).reverse());if(!hit(r,p.x,p.y))p.m=r}
+ if(e.key==' '){while(!hit(p.m,p.x,p.y+1))p.y++;lock()}
+ if(e.key.startsWith('Arrow')||e.key==' ')e.preventDefault();draw()};
+function draw(){x.clearRect(0,0,240,480);b.forEach((r,y)=>r.forEach((v,i)=>{if(v){x.fillStyle=v;x.fillRect(i*S,y*S,S-1,S-1)}}));
+ if(!over){x.fillStyle=p.c;p.m.forEach((r,y)=>r.forEach((v,i)=>{if(v)x.fillRect((p.x+i)*S,(p.y+y)*S,S-1,S-1)}))}
+ x.fillStyle='#fff';x.font='16px sans-serif';x.fillText('Skóre '+score,8,18);if(over)x.fillText('Konec - Enter',70,240)}
+setInterval(()=>{if(!over)step();draw()},500);init();
+</script>

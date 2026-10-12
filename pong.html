@@ -1,0 +1,15 @@
+<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width"><title>Pong</title><style>body{margin:0;background:#111;color:#fff;font:18px sans-serif;text-align:center}canvas{background:#000;margin-top:10px;max-width:100%}</style>
+<div>Myš nebo šipky nahoru/dolů. Hraje se do 7.</div><canvas id=c width=600 height=400></canvas>
+<script>
+const x=c.getContext('2d');let py=170,ay=170,bx=300,by=200,vx=5,vy=3,ps=0,as=0,k={};
+onmousemove=e=>{py=e.clientY-c.getBoundingClientRect().top-30};onkeydown=e=>k[e.key]=1;onkeyup=e=>k[e.key]=0;
+function reset(d){bx=300;by=200;vx=5*d;vy=(Math.random()*4-2)}
+(function loop(){if(ps<7&&as<7){if(k.ArrowUp)py-=7;if(k.ArrowDown)py+=7;py=Math.max(0,Math.min(340,py));
+ ay+=Math.max(-4.2,Math.min(4.2,by-30-ay));bx+=vx;by+=vy;if(by<5||by>395)vy*=-1;
+ if(vx<0&&bx<25&&bx>10&&by>py&&by<py+60){vx=Math.abs(vx)*1.05;vy+=(by-py-30)/10}
+ if(vx>0&&bx>575&&bx<590&&by>ay&&by<ay+60){vx=-Math.abs(vx)*1.05;vy+=(by-ay-30)/10}
+ if(bx<0){as++;reset(1)}if(bx>600){ps++;reset(-1)}}
+ x.fillStyle='#000';x.fillRect(0,0,600,400);x.fillStyle='#fff';x.fillRect(10,py,10,60);x.fillRect(580,ay,10,60);x.fillRect(bx-5,by-5,10,10);
+ for(let i=0;i<400;i+=20)x.fillRect(298,i,4,10);x.font='36px sans-serif';x.fillText(ps,250,40);x.fillText(as,330,40);
+ if(ps>=7||as>=7){x.fillText(ps>=7?'VYHRÁL JSI! (F5)':'Prohra (F5)',190,220)}requestAnimationFrame(loop)})();
+</script>

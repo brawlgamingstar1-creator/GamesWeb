@@ -1,0 +1,14 @@
+<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width"><title>Minesweeper</title><style>body{margin:0;background:#111;color:#fff;font:18px sans-serif;text-align:center}canvas{background:#000;margin-top:10px;max-width:100%}</style>
+<div>Klik = odkrýt, pravé tlačítko = vlajka, po konci klik = nová hra</div><canvas id=c width=400 height=400></canvas>
+<script>
+const x=c.getContext('2d'),N=10,M=15,S=40;let cell,over;
+function nb(i){const r=[],X=i%N,Y=i/N|0;for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){const u=X+a,v=Y+b;if((a||b)&&u>=0&&u<N&&v>=0&&v<N)r.push(v*N+u)}return r}
+function init(){cell=Array.from({length:N*N},()=>({m:0,o:0,f:0,n:0}));let k=0;while(k<M){const i=Math.random()*N*N|0;if(!cell[i].m){cell[i].m=1;k++}}cell.forEach((q,i)=>q.n=nb(i).filter(j=>cell[j].m).length);over=0;draw()}
+function opn(i){const q=cell[i];if(q.o||q.f)return;q.o=1;if(q.m){over=1;return}if(!q.n)nb(i).forEach(opn)}
+c.onmousedown=e=>{if(over){init();return}const r=c.getBoundingClientRect(),i=((e.clientY-r.top)/S|0)*N+((e.clientX-r.left)/S|0);if(e.button==2)cell[i].f^=1;else opn(i);if(!over&&cell.every(q=>q.m||q.o))over=2;draw()};
+c.oncontextmenu=e=>e.preventDefault();
+function draw(){x.font='bold 22px sans-serif';x.textAlign='center';cell.forEach((q,i)=>{const X=i%N*S,Y=(i/N|0)*S;x.fillStyle=q.o?'#ccc':'#678';x.fillRect(X,Y,S-2,S-2);x.fillStyle='#000';
+ if(q.o&&q.m||(over&&q.m))x.fillText('💣',X+20,Y+28);else if(q.o&&q.n){x.fillStyle=['','#00f','#080','#f00','#008','#800'][q.n]||'#000';x.fillText(q.n,X+20,Y+28)}else if(q.f)x.fillText('🚩',X+20,Y+28)});
+ if(over){x.fillStyle='rgba(0,0,0,.5)';x.fillRect(0,160,400,70);x.fillStyle='#fff';x.fillText(over==2?'VYHRÁL JSI!':'BUM! Prohra',200,205)}}
+init();
+</script>

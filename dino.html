@@ -1,0 +1,16 @@
+<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width"><title>Dino Runner</title><style>body{margin:0;background:#111;color:#fff;font:18px sans-serif;text-align:center}canvas{background:#000;margin-top:10px;max-width:100%}</style>
+<div>Mezerník / šipka nahoru / klik = skok</div><canvas id=c width=700 height=250></canvas>
+<script>
+const x=c.getContext('2d');let y,vy,ob,sp,score,dead,nx,fr;
+function init(){y=0;vy=0;ob=[];sp=6;score=0;dead=0;nx=60;fr=0}
+function jump(){if(dead)init();else if(y==0)vy=13}
+onkeydown=e=>{if(e.code=='Space'||e.code=='ArrowUp'){e.preventDefault();jump()}};onmousedown=jump;
+(function loop(){if(!dead){fr++;vy-=.7;y=Math.max(0,y+vy);if(y==0)vy=0;sp+=.002;score+=sp/10;nx--;
+ if(nx<=0){ob.push({x:700,w:18+Math.random()*22,h:28+Math.random()*28});nx=50+Math.random()*60-sp*2}
+ ob.forEach(o=>o.x-=sp);ob=ob.filter(o=>o.x>-50);
+ if(ob.some(o=>50+28>o.x&&50<o.x+o.w&&200-y-40<200&&200-y>200-o.h))dead=1}
+ x.fillStyle='#fafafa';x.fillRect(0,0,700,250);x.fillStyle='#333';x.fillRect(0,200,700,2);
+ x.fillRect(50,160-y,28,40);x.fillRect(66,152-y,20,16);ob.forEach(o=>x.fillRect(o.x,200-o.h,o.w,o.h));
+ x.font='20px monospace';x.fillText('Skóre '+(score|0),560,30);if(dead){x.font='30px sans-serif';x.fillText('Konec - mezerník',240,110)}requestAnimationFrame(loop)})();
+init();
+</script>

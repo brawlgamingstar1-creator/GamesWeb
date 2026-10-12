@@ -1,0 +1,11 @@
+<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width"><title>Whack-a-Mole</title><style>body{margin:0;background:#111;color:#fff;font:18px sans-serif;text-align:center}canvas{background:#000;margin-top:10px;max-width:100%}</style>
+<div id=i>Klikni na krtka! 30 sekund. Klikni pro start.</div><canvas id=c width=450 height=450></canvas>
+<script>
+const x=c.getContext('2d');let mole=-1,score=0,t=0,run=0,end=0;
+function pick(){mole=Math.random()*9|0;clearTimeout(pick.t);pick.t=setTimeout(()=>{if(run){mole=-1;draw();setTimeout(pick,200)}},Math.max(450,1000-score*15))}
+c.onclick=e=>{if(!run){run=1;score=0;end=Date.now()+30000;pick();tick();return}
+ const r=c.getBoundingClientRect(),i=((e.clientY-r.top)/150|0)*3+((e.clientX-r.left)/150|0);if(i==mole){score++;mole=-1;draw();setTimeout(pick,150)}else score=Math.max(0,score-1);draw()};
+function tick(){if(!run)return;const l=Math.ceil((end-Date.now())/1000);if(l<=0){run=0;mole=-1;i.textContent='Konec! Skóre '+score+' - klikni pro novou hru';draw();return}i.textContent='Skóre '+score+'   Čas '+l;setTimeout(tick,200)}
+function draw(){x.fillStyle='#3a5';x.fillRect(0,0,450,450);for(let k=0;k<9;k++){const X=k%3*150+75,Y=(k/3|0)*150+85;x.fillStyle='#321';x.beginPath();x.ellipse(X,Y,55,25,0,0,6.3);x.fill();if(k==mole){x.fillStyle='#865';x.beginPath();x.arc(X,Y-10,38,Math.PI,0);x.fill();x.fillStyle='#000';x.fillRect(X-16,Y-32,6,6);x.fillRect(X+10,Y-32,6,6);x.fillStyle='#f88';x.fillRect(X-6,Y-22,12,8)}}}
+draw();
+</script>

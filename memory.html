@@ -1,0 +1,11 @@
+<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width"><title>Pexeso</title><style>body{margin:0;background:#111;color:#fff;font:18px sans-serif;text-align:center}canvas{background:#000;margin-top:10px;max-width:100%}</style>
+<div id=i>Pexeso - najdi všechny dvojice</div><canvas id=c width=400 height=400></canvas>
+<script>
+const x=c.getContext('2d'),E=['🍎','🍌','🍇','🍒','🍉','🍋','🥝','🍑'];let cards,open,lk,moves;
+function init(){cards=[...E,...E].sort(()=>Math.random()-.5).map(e=>({e,o:0,d:0}));open=[];lk=0;moves=0;draw()}
+c.onclick=e=>{if(cards.every(q=>q.d)){init();return}if(lk)return;const r=c.getBoundingClientRect(),i=((e.clientY-r.top)/100|0)*4+((e.clientX-r.left)/100|0);if(cards[i].o||cards[i].d)return;cards[i].o=1;open.push(i);
+ if(open.length==2){moves++;if(cards[open[0]].e==cards[open[1]].e){open.forEach(j=>cards[j].d=1);open=[]}else{lk=1;setTimeout(()=>{open.forEach(j=>cards[j].o=0);open=[];lk=0;draw()},700)}}draw()};
+function draw(){x.font='50px sans-serif';x.textAlign='center';cards.forEach((q,i)=>{const X=i%4*100,Y=(i/4|0)*100;x.fillStyle=q.d?'#264':q.o?'#ccd':'#468';x.fillRect(X+4,Y+4,92,92);if(q.o||q.d){x.fillStyle='#000';x.fillText(q.e,X+50,Y+68)}});
+ i.textContent=cards.every(q=>q.d)?'Hotovo za '+moves+' tahů! Klikni pro novou hru':'Tahy: '+moves}
+init();
+</script>

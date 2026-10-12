@@ -1,0 +1,14 @@
+<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width"><title>2048</title><style>body{margin:0;background:#111;color:#fff;font:18px sans-serif;text-align:center}canvas{background:#000;margin-top:10px;max-width:100%}</style>
+<div>Šipky = posun | R = restart</div><canvas id=c width=420 height=420></canvas>
+<script>
+const x=c.getContext('2d');let g,score,dead;
+const col={0:'#cdc1b4',2:'#eee4da',4:'#ede0c8',8:'#f2b179',16:'#f59563',32:'#f67c5f',64:'#f65e3b',128:'#edcf72',256:'#edcc61',512:'#edc850',1024:'#edc53f',2048:'#edc22e'};
+function add(){const e=[];g.forEach((v,i)=>v||e.push(i));if(e.length)g[e[Math.random()*e.length|0]]=Math.random()<.9?2:4}
+function init(){g=Array(16).fill(0);score=0;dead=false;add();add();draw()}
+function line(a){const r=a.filter(v=>v),o=[];for(let i=0;i<r.length;i++){if(r[i]==r[i+1]){o.push(r[i]*2);score+=r[i]*2;i++}else o.push(r[i])}while(o.length<4)o.push(0);return o}
+function mv(d){const old=g.join();for(let k=0;k<4;k++){const idx=[0,1,2,3].map(j=>d<2?k*4+j:j*4+k);if(d%2)idx.reverse();const o=line(idx.map(i=>g[i]));idx.forEach((i,j)=>g[i]=o[j])}return g.join()!=old}
+function can(){return g.includes(0)||g.some((v,i)=>(i%4<3&&v==g[i+1])||(i<12&&v==g[i+4]))}
+document.onkeydown=e=>{const d={ArrowLeft:0,ArrowRight:1,ArrowUp:2,ArrowDown:3}[e.key];if(e.key=='r')init();else if(d!==undefined){e.preventDefault();if(mv(d))add();if(!can())dead=true;draw()}};
+function draw(){x.fillStyle='#bbada0';x.fillRect(0,0,420,420);g.forEach((v,i)=>{const X=i%4*100+15,Y=(i/4|0)*100+15;x.fillStyle=col[v]||'#3c3a32';x.fillRect(X,Y,90,90);if(v){x.fillStyle=v<8?'#776e65':'#fff';x.font='bold 36px sans-serif';x.textAlign='center';x.fillText(v,X+45,Y+57)}});document.title='2048 - '+score;if(dead){x.fillStyle='rgba(0,0,0,.6)';x.fillRect(0,0,420,420);x.fillStyle='#fff';x.fillText('Konec! Skóre '+score+' (R)',210,210)}}
+init();
+</script>
